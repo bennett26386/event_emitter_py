@@ -39,3 +39,10 @@ This exists for code that needs a small, dependency-free pub/sub primitive witho
 A `once` listener that raises is **not** removed. Its removal happens after a successful return, so a raised exception leaves the listener registered and a subsequent `emit` will call it again. If you want guaranteed one-shot semantics, catch inside the handler and re-emit or remove explicitly.
 
 Removing a not-yet-called listener from within another listener for the same event during `emit` prevents that pending listener from firing in the same dispatch — `emit` checks the live listener list at each step.
+
+## Performance
+
+The window keeps a bounded buffer, so `push` is constant time and memory does not
+grow with the length of the stream. `peak` and `trough` are linear in the window
+size, which is the trade that keeps `push` cheap.
+
